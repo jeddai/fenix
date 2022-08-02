@@ -1,0 +1,21 @@
+name: "Update Nimbus Experiments"
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '*/30 * * * *'
+
+jobs:
+  main:
+    name: "Update Nimbus Experiments"
+    runs-on: ubuntu-20.04
+    steps:
+      - name: "Checkout Master Branch"
+        uses: actions/checkout@v2
+        with:
+          path: main
+          ref: main
+      - name: "Update Experiments JSON"
+        run: |
+          curl https://experimenter.services.mozilla.com/api/v6/experiments/?is_first_run=True | jq '{"data":map(select(.appName == "fenix"))}' > app/src/main/res/raw/initial_experiments.json
+          git status
